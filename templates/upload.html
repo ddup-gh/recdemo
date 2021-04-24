@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3d-reconstruction</title>
+</head>
+<style>
+    body{
+        margin: 0px;
+        background-color: grey;
+    }
+    a{
+        text-decoration: none;
+        white-space:nowrap;
+    }
+    h2{
+        text-align:center;
+        /*margin: 10px auto;*/
+    }
+    p{
+        margin: 0px;
+    }
+    .upload-content{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 150px;
+            /*background-color: white;*/
+            }
+    .upload-content .f{
+            height: 30px;
+            width: 200px;
+            border: 2px ;
+            border-radius: 8px;
+            outline: none;
+            /*text-indent: 1em;*/
+        }
+    .upload-content .m{
+        color:orange;
+        text-align:center;
+        margin: 2px auto;
+        height: 20px;
+        width: 80px;
+        border: 1px solid rgba(0,0,0,0.2);
+        border-radius:25px;
+        background-color: rgb(22,160,93);
+    }
+    .upload-content .n{
+        color:orange;
+        text-align:center;
+        margin: 2px auto;
+        height: 20px;
+        width: 80px;
+        border: 1px solid rgba(0,0,0,0.2);
+        border-radius:25px;
+        background-color: rgb(22,160,93);
+    }
+    button:hover{
+    color: #fff;
+    background: rgb(22,160,93);
+}
+    {% load static %}
+    .bgimg{
+        position:absolute;    
+        left:0;    
+        right:0;    
+        bottom:0;    
+        margin:auto;    
+        width:100%;   
+        height:100%;   
+        z-index:-1;
+    }
+    .a{
+        text-align:center;
+    }
+    .b{
+        /*background-color: ivory;*/
+        float: left;
+        width: 65%;
+        height: 100%;
+        /*background:rgba(100,100,100,20);*/
+        color:red;
+    }
+    .b1{
+        text-align:center;
+        float: left;
+        border: 3px solid yellow;
+        margin: 20px 50px;
+        /*background-color: whitesmoke;*/
+        border-radius: 4px;
+    }
+    .b2{
+        text-align:center;
+        float: left;
+        border: 2px solid yellow;
+        margin: 20px 50px;
+        /*background-color: whitesmoke;*/
+        border-radius: 4px;
+    }
+    .c{
+        width:35%;
+        height:100%;
+        float: right;
+        /*background:blue;*/
+        margin: auto;
+        /*background-color: #ebf0f1;*/
+        border-radius: 8px;
+        text-align:center;
+    }
+</style>
+<body>
+    <h2>人体三维重建系统</h2>
+<div class="a">
+<form action="/upload.html" method="post" enctype="multipart/form-data" class="upload-content" style="display:inline">
+    {% csrf_token %}
+        <input type="file" name="upload" value="选择图片" class="m"/>
+        <input type="submit" value="上传图片" class="m"/>
+        <a href="/remove" class="m">清除图片</a>
+        <a href="/logout" class="m">退出系统</a>
+</form>
+</div>
+<div class="b" >
+    {% load static %}
+    <img src="{% static 'background.png' %}" class="bgimg" alt="">
+
+    {% for item in img_list %}
+    {% if forloop.counter == 1 %}
+        <div class="b1"  >
+            <p>人体背景</p>
+            <img style="height: 512px;width: 512px" src="/{{ item.path }}"/>
+        </div>
+    {% elif forloop.counter == 2 %}
+        <div class="b2"  >
+            <p>纹理图片</p>
+            <img style="height: 200px;width: 200px" src="/{{ item.path }}"/>
+        </div>
+    {% elif forloop.counter > 2 %}
+        <p>请点击“清除图片”后继续</p>
+    {% endif %}
+    {% empty %}
+        <div class="b1" >
+            <p>请上传人体背景</p>
+            <img style="height: 512px;width: 512px" src="{% static 'addpic.png' %}"/>
+        </div>
+        <div class="b2"  >
+            <p>请上传纹理图片</p>
+            <img style="height: 200px;width: 200px" src="{% static 'addpic.png' %}"/>
+        </div>
+    {% endfor %}
+</div>
+<div class="c">
+    <h3 class="title">纹理位置参数</h3>
+    <form action="upload.html" method="post" >
+    {% csrf_token %}
+        宽度比例：<input type="text" name="kw" placeholder="参考范围0.4~0.5"><br><br>
+        高度比例：<input type="text" name="kh" placeholder="参考范围0.25~0.35"><br><br>
+        缩放比例：<input type="text" name="ks" placeholder="参考范围0.8~1.2"><br><br>
+        <a href="/preview" class="m" style="margin:30px">预览</a>
+        <input type="submit" value="完成" class="btn">
+        <br><br><p>注：宽高度比例为贴图位置到边界距离<br>与背景宽（高）度的比值</p>
+    </form>
+</div>
+</body>
+</html>
